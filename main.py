@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, LLM
+from noticias import coletar_noticias
 
 load_dotenv()
 
@@ -27,4 +28,6 @@ equipe = Crew(agents=[pesquisador], tasks=[tarefa_pesquisa], verbose=True)
 
 resultado = equipe.kickoff()
 
-print(resultado)
+resultado_noticias = coletar_noticias(3)
+
+print(resultado_noticias)
