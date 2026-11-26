@@ -21,8 +21,19 @@ pesquisador = Agent(
 )
 
 tarefa_pesquisa = Task(
-    description="Identifique cinco temas relevantes para acompanhar no mercado financeiro nacional e internacional.",
-    expected_output="Uma lista com cinco temas e uma breve descrição de cada um.",
+    description=(
+        "Utilize a ferramenta de coleta de notícias para buscar "
+        "cinco notícias financeiras e econômicas recentes. "
+        "Traduza obrigatoriamente os títulos e resumos "
+        "para português do Brasil. "
+        "Preserve as informações originais, sem inventar dados. "
+        "Mantenha os links e as datas originais."
+    ),
+    expected_output=(
+        "Uma lista de cinco notícias contendo: "
+        "título em português, resumo em português, "
+        "fonte, data e link original."
+    ),
     agent=pesquisador,
 )
 
