@@ -18,6 +18,7 @@ def coletar_noticias(quantidade: int = 5) -> list:
 
     noticias = []
 
+    # Define o intervalo de coleta utilizando o horário UTC.
     agora = datetime.now(timezone.utc)
     limite = agora - timedelta(hours=24)
 
@@ -25,49 +26,40 @@ def coletar_noticias(quantidade: int = 5) -> list:
     for fonte, url in FONTES.items():
         feed = feedparser.parse(url)
 
-    # Padroniza os dados coletados para processamento pelo agente.
-    for noticia in feed.entries[:quantidade]:
+        for noticia in feed.entries[:quantidade]:
 
-        if not noticia.get("published_parsed"):
-            continue
+            if not noticia.get("published_parsed"):
+                continue
 
-        data_publicacao = datetime.fromtimestamp(
-            timegm(noticia["published_parsed"]), tz=timezone.utc
-        )
+            # Converte a data de publicação para datetime em UTC.
+            data_publicacao = datetime.fromtimestamp(
+                timegm(noticia["published_parsed"]), tz=timezone.utc
+            )
 
-        if not (limite <= data_publicacao <= agora):
-            continue
+            if not (limite <= data_publicacao <= agora):
+                continue
 
-        dados = {
-            "titulo": noticia["title"],
-            "resumo": noticia["summary"],
-            "link": noticia["link"],
-            "data": noticia["published"],
-            "fonte": fonte,
-        }
+            # Padroniza os dados coletados para processamento pelo agente.
+            dados = {
+                "titulo": noticia["title"],
+                "resumo": noticia["summary"],
+                "link": noticia["link"],
+                "data": noticia["published"],
+                "fonte": fonte,
+            }
 
-        noticias.append(dados)
+            noticias.append(dados)
 
     return noticias
 
 
-# TESTE TEMPORÁRIO DE DATAS
-feed = feedparser.parse(FONTES["BBC Business"])
+# Teste temporário para validação da coleta e do filtro temporal.
+resultado = coletar_noticias.run(quantidade=5)
 
-noticia = feed.entries[0]
+print("Total de notícias:", len(resultado))
 
-data_publicacao = datetime.fromtimestamp(
-    timegm(noticia["published_parsed"]), tz=timezone.utc
-)
-
-print("Data original:", noticia["published"])
-print("Data convertida:", data_publicacao)
-
-agora = datetime.now(timezone.utc)
-
-limite = agora - timedelta(hours=24)
-
-if limite <= data_publicacao <= agora:
-    print("Notícia dentro das últimas 24 horas")
-else:
-    print("Notícia fora do intervalo")
+for noticia in resultado:
+    print(noticia["fonte"])
+    print(noticia["data"])
+    print(noticia["titulo"])
+    print("-" * 50)
