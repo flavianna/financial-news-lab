@@ -20,13 +20,25 @@ pesquisador = Agent(
     allow_delegation=False,
 )
 
+# Agente responsável pela tradução, síntese e análise de sentimento.
+analista = Agent(
+    role="Analista de notícias financeiras",
+    goal="Produzir resumos claros e objetivos sobre notícias financeiras",
+    backstory="Você é um especialista em economia e comunicação financeira.",
+    llm=llm,
+    verbose=True,
+    allow_delegation=False,
+)
+
 tarefa_pesquisa = Task(
     description=(
         "Utilize a ferramenta de coleta para buscar cinco notícias "
         "de cada fonte disponível. "
         "Selecione até cinco notícias de maior relevância "
         "para o mercado financeiro nacional e internacional. "
-        "Evite selecionar notícias sobre o mesmo acontecimento. "
+        "Não selecione notícias que descrevam o mesmo acontecimento, "
+        "mesmo quando publicadas por fontes diferentes. "
+        "Revise a seleção antes de entregar o resultado. "
         "Busque diversidade de assuntos e fontes. "
         "Não invente informações."
     ),
@@ -37,7 +49,38 @@ tarefa_pesquisa = Task(
     agent=pesquisador,
 )
 
-# Orquestração do agente e da tarefa
-equipe = Crew(agents=[pesquisador], tasks=[tarefa_pesquisa], verbose=True)
+tarefa_analise = Task(
+    description=(
+        "Analise as notícias selecionadas pelo pesquisador. "
+        "Traduza os títulos para português do Brasil. "
+        "Utilize linguagem natural e terminologia financeira "
+        "adequada ao português do Brasil, evitando traduções literais. "
+        "Preserve a seleção de notícias realizada pelo pesquisador. "
+        "Produza resumos claros de até três frases. "
+        "Não invente informações nem faça recomendações de investimentos. "
+        "Preserve a fonte, a data e o link original."
+    ),
+    expected_output=(
+        "Um boletim em português com até cinco notícias, "
+        "contendo título, resumo, fonte, data e link."
+    ),
+    agent=analista,
+    # Utiliza o resultado da pesquisa como contexto para a análise.
+    context=[tarefa_pesquisa],
+)
+
+# Orquestração sequencial dos agentes e suas respectivas tarefas.
+equipe = Crew(
+    agents=[pesquisador, analista],
+    tasks=[tarefa_pesquisa, tarefa_analise],
+    verbose=True,
+)
 
 resultado = equipe.kickoff()
+
+# Inspeciona as saídas individuais para identificar falhas por etapa.
+print("\n===== RESULTADO DO PESQUISADOR =====\n")
+print(tarefa_pesquisa.output.raw)
+
+print("\n===== RESULTADO DO ANALISTA =====\n")
+print(tarefa_analise.output.raw)
