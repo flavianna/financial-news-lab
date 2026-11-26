@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, LLM
 from noticias import coletar_noticias
+from schemas import Boletim
 
 load_dotenv()
 
@@ -20,7 +21,7 @@ pesquisador = Agent(
     allow_delegation=False,
 )
 
-# Agente responsável pela tradução, síntese e análise de sentimento.
+# Agente responsável pela tradução e síntese das notícias.
 analista = Agent(
     role="Analista de notícias financeiras",
     goal="Produzir resumos claros e objetivos sobre notícias financeiras",
@@ -67,6 +68,7 @@ tarefa_analise = Task(
     agent=analista,
     # Utiliza o resultado da pesquisa como contexto para a análise.
     context=[tarefa_pesquisa],
+    output_pydantic=Boletim,
 )
 
 # Orquestração sequencial dos agentes e suas respectivas tarefas.
@@ -78,9 +80,5 @@ equipe = Crew(
 
 resultado = equipe.kickoff()
 
-# Inspeciona as saídas individuais para identificar falhas por etapa.
-print("\n===== RESULTADO DO PESQUISADOR =====\n")
-print(tarefa_pesquisa.output.raw)
 
-print("\n===== RESULTADO DO ANALISTA =====\n")
-print(tarefa_analise.output.raw)
+print(resultado.pydantic.model_dump_json(indent=4))
