@@ -22,17 +22,17 @@ pesquisador = Agent(
 
 tarefa_pesquisa = Task(
     description=(
-        "Utilize a ferramenta de coleta de notícias para buscar "
-        "cinco notícias financeiras e econômicas recentes. "
-        "Traduza obrigatoriamente os títulos e resumos "
-        "para português do Brasil. "
-        "Preserve as informações originais, sem inventar dados. "
-        "Mantenha os links e as datas originais."
+        "Utilize a ferramenta de coleta para buscar cinco notícias "
+        "de cada fonte disponível. "
+        "Selecione até cinco notícias de maior relevância "
+        "para o mercado financeiro nacional e internacional. "
+        "Evite selecionar notícias sobre o mesmo acontecimento. "
+        "Busque diversidade de assuntos e fontes. "
+        "Não invente informações."
     ),
     expected_output=(
-        "Uma lista de cinco notícias contendo: "
-        "título em português, resumo em português, "
-        "fonte, data e link original."
+        "Uma lista de até cinco notícias selecionadas, "
+        "contendo título, resumo original, fonte, data e link."
     ),
     agent=pesquisador,
 )
@@ -41,8 +41,3 @@ tarefa_pesquisa = Task(
 equipe = Crew(agents=[pesquisador], tasks=[tarefa_pesquisa], verbose=True)
 
 resultado = equipe.kickoff()
-
-
-resultado_noticias = coletar_noticias.run(quantidade=3)
-
-print(resultado_noticias)
