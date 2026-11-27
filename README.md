@@ -45,15 +45,18 @@ A geração do boletim e o envio ao Make são executados por scripts independent
 
 ### Agentes de inteligência artificial
 
-  ----------------------------------------------------------------------------------------------------------------
-  Agente                              Responsabilidade
-  ----------------------------------- ----------------------------------------------------------------------------
-  Pesquisador                         Selecionar notícias relevantes entre os dados previamente coletados.
+A solução utiliza uma arquitetura multiagente implementada com CrewAI, na qual dois agentes especializados atuam de forma complementar na produção do boletim financeiro.
 
-  Analista                            Traduzir títulos, sintetizar informações e produzir o boletim estruturado.
-  ----------------------------------------------------------------------------------------------------------------
+| Agente | Responsabilidades |
+|---|---|
+| **Pesquisador** | Avaliar as notícias coletadas via RSS, selecionar até cinco de maior relevância para o mercado financeiro e buscar diversidade de assuntos e fontes, evitando informações redundantes. |
+| **Analista** | Traduzir os títulos para português do Brasil, sintetizar as informações selecionadas e produzir um boletim estruturado, preservando as fontes, datas e links originais. |
 
-A orquestração é sequencial, utilizando o resultado da tarefa de pesquisa como contexto para a tarefa de análise. Ambos os agentes utilizam o modelo `gpt-4o-mini`, com temperatura de 0,2.
+A execução ocorre de forma sequencial: o resultado da tarefa do pesquisador é fornecido como contexto para a tarefa do analista.
+
+Essa divisão permite especializar os prompts de acordo com cada responsabilidade e separar a curadoria das notícias da produção do conteúdo final.
+
+Ambos os agentes utilizam o modelo `gpt-4o-mini`, com temperatura de `0.2`, configurada para favorecer respostas mais consistentes e reduzir a variabilidade das saídas.
 
 ### Integração com o Make
 
