@@ -2,6 +2,7 @@ import feedparser
 from crewai.tools import tool
 from datetime import datetime, timedelta, timezone
 from calendar import timegm
+import logging
 
 FONTES = {
     "BBC Business": "https://feeds.bbci.co.uk/news/business/rss.xml",
@@ -24,10 +25,17 @@ def coletar_noticias(quantidade: int = 5) -> list:
 
     # Distribui a coleta entre as fontes para diversificar as notícias.
     for fonte, url in FONTES.items():
+        logging.info(f"Consultando fonte: {fonte}")
+
         feed = feedparser.parse(url)
+
+        if not feed.entries:
+            logging.warning(f"Nenhuma notícia obtida de: {fonte}")
+            continue
 
         for noticia in feed.entries[:quantidade]:
 
+            # Permite continuar a coleta mesmo quando uma fonte não retorna notícias.
             if not noticia.get("published_parsed"):
                 continue
 
@@ -51,15 +59,3 @@ def coletar_noticias(quantidade: int = 5) -> list:
             noticias.append(dados)
 
     return noticias
-
-
-# Teste temporário para validação da coleta e do filtro temporal.
-resultado = coletar_noticias.run(quantidade=5)
-
-print("Total de notícias:", len(resultado))
-
-for noticia in resultado:
-    print(noticia["fonte"])
-    print(noticia["data"])
-    print(noticia["titulo"])
-    print("-" * 50)
