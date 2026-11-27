@@ -3,8 +3,19 @@ from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, LLM
 from noticias import coletar_noticias
 from schemas import Boletim
+import logging
 
 load_dotenv()
+
+# Configura o registro de eventos e erros da aplicação.
+logging.basicConfig(
+    filename="app.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    encoding="utf-8",
+)
+
+logging.info("Aplicação iniciada")
 
 api_key = os.getenv("OPENAI_API_KEY")
 
@@ -79,12 +90,24 @@ equipe = Crew(
     verbose=True,
 )
 
-resultado = equipe.kickoff()
 
+# Executa o fluxo de geração do boletim com tratamento de exceções.
+try:
+    logging.info("Iniciando execução dos agentes")
 
-boletim_json = resultado.pydantic.model_dump_json(indent=4)
+    resultado = equipe.kickoff()
 
-print(boletim_json)
+    logging.info("Execução dos agentes concluída")
 
-with open("boletim.json", "w", encoding="utf-8") as arquivo:
-    arquivo.write(boletim_json)
+    boletim_json = resultado.pydantic.model_dump_json(indent=4)
+
+    print(boletim_json)
+
+    with open("boletim.json", "w", encoding="utf-8") as arquivo:
+        arquivo.write(boletim_json)
+
+    logging.info("Boletim salvo com sucesso")
+
+except Exception as erro:
+    logging.exception("Erro ao gerar o boletim")
+    print(f"Erro ao gerar o boletim: {erro}")
