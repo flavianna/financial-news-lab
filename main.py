@@ -68,6 +68,7 @@ tarefa_analise = Task(
     agent=analista,
     # Utiliza o resultado da pesquisa como contexto para a análise.
     context=[tarefa_pesquisa],
+    # Define o modelo de saída estruturada da tarefa.
     output_pydantic=Boletim,
 )
 
@@ -81,4 +82,9 @@ equipe = Crew(
 resultado = equipe.kickoff()
 
 
-print(resultado.pydantic.model_dump_json(indent=4))
+boletim_json = resultado.pydantic.model_dump_json(indent=4)
+
+print(boletim_json)
+
+with open("boletim.json", "w", encoding="utf-8") as arquivo:
+    arquivo.write(boletim_json)

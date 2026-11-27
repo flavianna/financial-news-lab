@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 # define a estrutura de uma notícia individual
@@ -12,4 +12,4 @@ class Noticia(BaseModel):
 
 # define uma lista de notícias.
 class Boletim(BaseModel):
-    noticias: list[Noticia]
+    noticias: list[Noticia] = Field(max_length=5)
