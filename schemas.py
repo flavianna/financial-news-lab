@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 # define a estrutura de uma notícia individual

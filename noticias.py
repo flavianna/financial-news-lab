@@ -10,7 +10,7 @@ FONTES = {
 }
 
 
-# Disponibiliza a função de coleta RSS como ferramenta do CrewAI.
+# Coleta e padroniza notícias financeiras provenientes de fontes RSS.
 def coletar_noticias(quantidade: int = 5) -> list:
     """Coleta notícias financeiras nacionais e internacionais
     publicadas nas últimas 24 horas."""

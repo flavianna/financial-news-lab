@@ -77,7 +77,7 @@ tarefa_analise = Task(
         "Preserve a seleção de notícias realizada pelo pesquisador. "
         "Produza resumos claros de até três frases. "
         "Não invente informações nem faça recomendações de investimentos. "
-        "Preserve a fonte, a data e o link original."
+        "Preserve a fonte, a data e o link original. "
         "Se o pesquisador não retornar notícias, "
         "retorne uma lista vazia. "
     ),
