@@ -1,5 +1,4 @@
 import feedparser
-from crewai.tools import tool
 from datetime import datetime, timedelta, timezone
 from calendar import timegm
 import logging
@@ -12,7 +11,6 @@ FONTES = {
 
 
 # Disponibiliza a função de coleta RSS como ferramenta do CrewAI.
-@tool("Coletar notícias financeiras")
 def coletar_noticias(quantidade: int = 5) -> list:
     """Coleta notícias financeiras nacionais e internacionais
     publicadas nas últimas 24 horas."""

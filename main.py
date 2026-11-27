@@ -21,13 +21,22 @@ api_key = os.getenv("OPENAI_API_KEY")
 
 llm = LLM(model="gpt-4o-mini", temperature=0.2)
 
-# Agente pesquisador com acesso à ferramenta de coleta RSS
+# Executa a coleta RSS diretamente pelo Python, sem depender do agente.
+noticias = coletar_noticias(5)
+
+
+# Impede a execução dos agentes quando não existem dados reais disponíveis.
+if not noticias:
+    logging.error("Nenhuma notícia disponível")
+    print("Não foi possível coletar notícias.")
+    exit()
+
+# Agente responsável pela seleção das notícias previamente coletadas.
 pesquisador = Agent(
     role="Pesquisador de notícias financeiras",
-    goal="Coletar e selecionar notícias relevantes do mercado financeiro nacional e internacional",
+    goal="Selecionar notícias relevantes do mercado financeiro nacional e internacional",
     backstory="Você é um pesquisador especializado em economia global e mercados financeiros, comprometido com a confiabilidade das fontes de informação.",
     llm=llm,
-    tools=[coletar_noticias],
     verbose=True,
     allow_delegation=False,
 )
@@ -42,19 +51,15 @@ analista = Agent(
     allow_delegation=False,
 )
 
+# Fornece as notícias previamente coletadas como contexto para a seleção.
 tarefa_pesquisa = Task(
     description=(
-        "Utilize a ferramenta de coleta para buscar cinco notícias "
-        "de cada fonte disponível. "
+        f"Analise as seguintes notícias coletadas: {noticias}. "
         "Selecione até cinco notícias de maior relevância "
         "para o mercado financeiro nacional e internacional. "
-        "Não selecione notícias que descrevam o mesmo acontecimento, "
-        "mesmo quando publicadas por fontes diferentes. "
-        "Revise a seleção antes de entregar o resultado. "
+        "Evite notícias sobre o mesmo acontecimento. "
         "Busque diversidade de assuntos e fontes. "
         "Não invente informações."
-        "Se nenhuma notícia for retornada pela ferramenta, "
-        "não invente informações e retorne uma lista vazia. "
     ),
     expected_output=(
         "Uma lista de até cinco notícias selecionadas, "
@@ -100,6 +105,7 @@ try:
     logging.info("Iniciando execução dos agentes")
 
     resultado = equipe.kickoff()
+    # Impede o armazenamento de um boletim sem notícias.
     if not resultado.pydantic.noticias:
         raise ValueError("Não existem notícias para gerar o boletim")
 
