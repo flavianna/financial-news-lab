@@ -53,6 +53,8 @@ tarefa_pesquisa = Task(
         "Revise a seleção antes de entregar o resultado. "
         "Busque diversidade de assuntos e fontes. "
         "Não invente informações."
+        "Se nenhuma notícia for retornada pela ferramenta, "
+        "não invente informações e retorne uma lista vazia. "
     ),
     expected_output=(
         "Uma lista de até cinco notícias selecionadas, "
@@ -71,6 +73,8 @@ tarefa_analise = Task(
         "Produza resumos claros de até três frases. "
         "Não invente informações nem faça recomendações de investimentos. "
         "Preserve a fonte, a data e o link original."
+        "Se o pesquisador não retornar notícias, "
+        "retorne uma lista vazia. "
     ),
     expected_output=(
         "Um boletim em português com até cinco notícias, "
@@ -96,6 +100,8 @@ try:
     logging.info("Iniciando execução dos agentes")
 
     resultado = equipe.kickoff()
+    if not resultado.pydantic.noticias:
+        raise ValueError("Não existem notícias para gerar o boletim")
 
     logging.info("Execução dos agentes concluída")
 

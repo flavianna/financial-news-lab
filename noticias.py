@@ -58,4 +58,7 @@ def coletar_noticias(quantidade: int = 5) -> list:
 
             noticias.append(dados)
 
+        if not noticias:
+            logging.error("Nenhuma notícia válida foi coletada")
+
     return noticias
